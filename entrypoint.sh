@@ -17,3 +17,9 @@ ls -al ${TOOL}
 
 echo Look for Java
 java -version
+
+echo root folder
+ls -al /
+
+echo root folder
+ls -al /opt
