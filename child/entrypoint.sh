@@ -11,21 +11,3 @@ pwd
 
 echo current dir contents
 ls -al
-
-echo ---------
-echo ENV
-env
-echo --------
-
-echo Tool location
-TOOL=/multi-repo-ci-tool-runner
-ls -al ${TOOL}
-
-#echo Look for Java
-#java -version
-
-echo root folder
-ls -al /
-
-echo root folder
-ls -al /opt
