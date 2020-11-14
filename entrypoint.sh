@@ -10,6 +10,10 @@ pwd
 echo current dir contents
 ls -al
 
+echo ---------
+echo ENV
+env
+echo --------
 
 echo Tool location
 TOOL=/multi-repo-ci-tool-runner
