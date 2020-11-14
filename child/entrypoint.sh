@@ -1,5 +1,6 @@
 #!/bin/sh -l
 
+# We can have more than one action per repository it seems!
 echo "Child!!!"
 
 echo "Hello $1 $2 $3"
