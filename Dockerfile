@@ -5,4 +5,4 @@ COPY entrypoint.sh /entrypoint.sh
 
 # ENTRYPOINT ["/entrypoint.sh"]
 # Allows variable substitution
-ENTRYPOINT ["sh", "-c", "/entrypoint.sh"]
+ENTRYPOINT ["sh", "-c", "/entrypoint.sh $*"]
