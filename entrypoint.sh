@@ -9,3 +9,12 @@ pwd
 
 echo current dir contents
 ls -al
+
+
+echo Tool location
+TOOL=/multi-repo-ci-tool-runner
+ls -al ${TOOL}
+
+${TOOL}
+
+echo found it? $?
