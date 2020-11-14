@@ -15,6 +15,5 @@ echo Tool location
 TOOL=/multi-repo-ci-tool-runner
 ls -al ${TOOL}
 
-${TOOL}
-
-echo found it? $?
+echo Look for Java
+java -version
