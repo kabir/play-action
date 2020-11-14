@@ -1,0 +1,22 @@
+name: 'Kabir Play'
+description: 'Greet someone and record the time'
+inputs:
+  name:  # id of input
+    description: 'Who to greet'
+    required: true
+  age:  # id of input
+    description: 'Age'
+    required: false
+  town:  # id of input
+    description: 'Town'
+    required: true
+outputs:
+  time: # id of output
+    description: 'The time we greeted you'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.name }}
+    - ${{ inputs.age }}
+    - ${{ inputs.town }}
