@@ -1,9 +1,7 @@
 #!/bin/sh -l
 
-# cat ${GITHUB_EVENT_PATH}
-checkCheckedOutRepo
-
-# Functions
+###########################################################################################
+# Functions 
 
 checkCheckedOutRepo() {
   echo Checking we have checked out ${GITHUB_ACTION_REPOSITORY}...
@@ -19,4 +17,11 @@ checkCheckedOutRepo() {
     echo Have checked out ${GITHUB_ACTION_REPOSITORY}.
   fi
 }
+
+###########################################################################################
+# Main code 
+
+cat ${GITHUB_EVENT_PATH}
+checkCheckedOutRepo
+
 
