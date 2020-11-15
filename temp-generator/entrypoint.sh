@@ -1,5 +1,8 @@
 #!/bin/sh -l
 
+# cat ${GITHUB_EVENT_PATH}
+checkCheckedOutRepo
+
 # Functions
 
 checkCheckedOutRepo() {
@@ -17,5 +20,3 @@ checkCheckedOutRepo() {
   fi
 }
 
-# cat ${GITHUB_EVENT_PATH}
-checkCheckedOutRepo
