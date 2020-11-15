@@ -21,14 +21,24 @@ checkCheckedOutRepo() {
 ############################################################
 # Main code
 
+TOKEN="${1}"
+if [[ -z "${TOKEN}" ]]; then
+  echo "No token was passed in. It is needed to push the generated workflow to GitHub."
+  exit 1
+fi
+
 cat ${GITHUB_EVENT_PATH}
 checkCheckedOutRepo
 
+############################################################
 # Get parameters from the event
-issue_body="$(jq '.issue.body' ${GITHUB_EVENT_PATH})"
-issue_number="$(jq '.issue.number' ${GITHUB_EVENT_PATH})"
-issue_title="$(jq '.issue.title' ${GITHUB_EVENT_PATH})"
-issue_url="$(jq '.issue.url' ${GITHUB_EVENT_PATH})"
+issue_body="$(jq --raw-output '.issue.body' ${GITHUB_EVENT_PATH})"
+issue_number="$(jq --raw-output '.issue.number' ${GITHUB_EVENT_PATH})"
+issue_title="$(jq --raw-output '.issue.title' ${GITHUB_EVENT_PATH})"
+issue_url="$(jq --raw-output '.issue.url' ${GITHUB_EVENT_PATH})"
+# unescape issue body
+issue_body=$(printf '%b\n' "${issue_body}")
+
 
 branch="multi-repo-ci-branch-${issue_number}"
 
@@ -46,6 +56,13 @@ cat config.yml
 ############################################################
 # Generate the workflow
 /multi-repo-ci-tool-runner generate-workflow --workflow-dir=.github/workflows --yaml=config.yml --issue=${issue_number} --branch=${branch}
+
+# TEMP Stuff
+echo $?
+pwd
+ls -al
+echo .github/workflows
+ls -al  .github/workflows
 
 ############################################################
 # Update the issue-data.json created by the tool to:
