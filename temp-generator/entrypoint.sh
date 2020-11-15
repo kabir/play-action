@@ -9,7 +9,7 @@ checkCheckedOutRepo() {
     echo
     echo "- uses: actions/checkout@v2"
     echo "    with:"
-    echo "      token: $\{\{ secrets.OB_MULTI_CI_PAT \}\}"
+    echo "      token: ${{ secrets.OB_MULTI_CI_PAT }}"
 
     exit 1
   else
