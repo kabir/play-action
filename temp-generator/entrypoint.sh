@@ -43,8 +43,11 @@ issue_body=$(printf '%b\n' "${issue_body}")
 branch="multi-repo-ci-branch-${issue_number}"
 
 ############################################################
-# Checkout
+# Checkout and configure
 git checkout -b "${branch}"
+git config --global user.email "ci@example.com"
+git config --global user.name "CI Action"
+
 
 ############################################################
 # Get the issue body into config.yml
