@@ -1,11 +1,11 @@
 name: Overbård Multi Repo CI - Workflow Generator
 description: Generates the workflow to do the multi-component testing
-inputs:
-  token:
-    description: A token which is allowed to push the branch to the repository
-    required: true
+# inputs:
+#   token:
+#     description: A token which is allowed to push the branch to the repository
+#     required: true
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.token }}
+#   args:
+#     - ${{ inputs.token }}
