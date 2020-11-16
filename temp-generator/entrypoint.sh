@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+set -o xtrace
+
 ############################################################
 # Functions 
 
@@ -20,13 +22,6 @@ checkCheckedOutRepo() {
 
 ############################################################
 # Main code
-
-TOKEN="${1}"
-if [[ -z "${TOKEN}" ]]; then
-  echo "No token was passed in. It is needed to push the generated workflow to GitHub."
-  exit 1
-fi
-
 cat ${GITHUB_EVENT_PATH}
 checkCheckedOutRepo
 
@@ -47,6 +42,7 @@ if [[ -z "${branch}" ]]; then
   exit 1
 fi
 
+# Intentional error
 git checkout not-there
 
 ############################################################
