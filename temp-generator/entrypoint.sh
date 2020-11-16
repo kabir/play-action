@@ -36,7 +36,7 @@ issue_body="$(jq --raw-output '.issue.body' ${GITHUB_EVENT_PATH})"
 issue_number="$(jq --raw-output '.issue.number' ${GITHUB_EVENT_PATH})"
 issue_title="$(jq --raw-output '.issue.title' ${GITHUB_EVENT_PATH})"
 issue_url="$(jq --raw-output '.issue.url' ${GITHUB_EVENT_PATH})"
-# unescape issue body
+# unescape issue body (it contains \r\n entries)
 issue_body=$(printf '%b\n' "${issue_body}")
 
 
@@ -46,6 +46,8 @@ if [[ -z "${branch}" ]]; then
   echo "Could not determine issue number"
   exit 1
 fi
+
+git checkout not-there
 
 ############################################################
 # Checkout and configure
