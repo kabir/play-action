@@ -42,6 +42,11 @@ issue_body=$(printf '%b\n' "${issue_body}")
 
 branch="multi-repo-ci-branch-${issue_number}"
 
+if [[ -z "${branch}" ]]; then
+  echo "Could not determine issue number"
+  exit 1
+fi
+
 ############################################################
 # Checkout and configure
 git checkout -b "${branch}"
