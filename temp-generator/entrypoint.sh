@@ -43,10 +43,10 @@ echo "Issue URL: ${issue_url}"
 issue_body="$(jq --raw-output '.issue.body' ${GITHUB_EVENT_PATH})"
 # unescape issue body (it contains \r\n entries)
 issue_body=$(printf '%b\n' "${issue_body}")
-echo "Issue body: ${issue_body}"
+echo "Issue body:\n${issue_body}"
 
 branch="multi-repo-ci-branch-${issue_number}"
-echo "Working branch: ${issue_body}"
+echo "Working branch: ${branch}"
 
 # Intentional error
 git checkout not-there
