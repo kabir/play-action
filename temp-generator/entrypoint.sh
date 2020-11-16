@@ -27,20 +27,26 @@ checkCheckedOutRepo
 
 ############################################################
 # Get parameters from the event
-issue_body="$(jq --raw-output '.issue.body' ${GITHUB_EVENT_PATH})"
 issue_number="$(jq --raw-output '.issue.number' ${GITHUB_EVENT_PATH})"
-issue_title="$(jq --raw-output '.issue.title' ${GITHUB_EVENT_PATH})"
-issue_url="$(jq --raw-output '.issue.url' ${GITHUB_EVENT_PATH})"
-# unescape issue body (it contains \r\n entries)
-issue_body=$(printf '%b\n' "${issue_body}")
-
-
-branch="multi-repo-ci-branch-${issue_number}"
-
-if [[ -z "${branch}" ]]; then
+echo "Issue number: ${issue_number}"
+if [[ -z "${issue_number}" ]]; then
   echo "Could not determine issue number"
   exit 1
 fi
+
+issue_title="$(jq --raw-output '.issue.title' ${GITHUB_EVENT_PATH})"
+echo "Issue title: ${issue_title}"
+
+issue_url="$(jq --raw-output '.issue.url' ${GITHUB_EVENT_PATH})"
+echo "Issue URL: ${issue_url}"
+
+issue_body="$(jq --raw-output '.issue.body' ${GITHUB_EVENT_PATH})"
+# unescape issue body (it contains \r\n entries)
+issue_body=$(printf '%b\n' "${issue_body}")
+echo "Issue body: ${issue_body}"
+
+branch="multi-repo-ci-branch-${issue_number}"
+echo "Working branch: ${issue_body}"
 
 # Intentional error
 git checkout not-there
