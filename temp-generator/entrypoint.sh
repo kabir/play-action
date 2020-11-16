@@ -55,7 +55,7 @@ cat config.yml
 
 ############################################################
 # Generate the workflow
-/multi-repo-ci-tool-runner generate-workflow --workflow-dir=.github/workflows --yaml=config.yml --issue=${issue_number} --branch=${branch}
+/multi-repo-ci-tool-runner generate-workflow --workflow-dir=.github/workflows --yaml=config.yml --issue=${issue_number} --branch=${branch} --working-dir=.
 
 # TEMP Stuff
 echo $?
