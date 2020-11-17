@@ -29,6 +29,9 @@ echo env
 env
 echo "========="
 
+echo "Current directory:"
+pwd
+
 checkCheckedOutRepo
 initGit
 
