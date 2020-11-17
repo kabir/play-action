@@ -100,18 +100,9 @@ fi
 
 ############################################################
 # Commit and push the workflow to the branch
-echo "Committing generated workflow"
+echo "Committing generated workflow..."
 git add -A
 git commit -m "Generated Workflow: #${issue_number} - ${issue_title}"
-
-# Tmp stuff
-logError "Test error"
-echo "..."
-logWarn "Intentional error coming up"
-echo "..."
-# Intentional error
-git checkout not-there
-
-
+echo "Pushing to origin ${branch}"
 git push --force origin "${branch}"
 
