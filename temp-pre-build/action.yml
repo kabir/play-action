@@ -1,0 +1,21 @@
+name: Overbård Multi Repo CI - Pre Build Action
+description: Used in the generated workflow to do the steps before doing the build
+inputs:
+  build:
+    description: Indicates if we are a doing a component build or not. 1 means we are, 0 means we are not (i.e. it is a test job for a custom component).
+    required: true
+  custom:
+    description: Indicates if this is a custom component or not. 1 means we are, 0 means we are not.
+    required: true
+outputs:
+  git-sha:
+    description: "The SHA-1 of the component branch, if we are a build step"
+  version:
+    description: "The version build from the component branch, if we are a build step"
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.build }}
+    - ${{ inputs.custom }}
