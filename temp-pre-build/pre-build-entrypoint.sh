@@ -5,6 +5,7 @@ source /ci-tool-common.sh
 
 ############################################################
 # Input variables and validation
+############################################################
 IS_BUILD_JOB="${1}"
 IS_CUSTOM_COMPONENT="${1}"
 
@@ -23,7 +24,7 @@ fi
 
 ############################################################
 # Functions
-
+############################################################
 checkCheckedOutRepo() {
   echo Checking we have checked out ${GITHUB_ACTION_REPOSITORY}...
   if [[ ! -d ".git" ]]; then
@@ -118,7 +119,7 @@ mergeLargeFilesInArtifactsDirectory() {
 
 ############################################################
 # Main code
-
+############################################################
 
 echo Performing pre-build preparation work
 

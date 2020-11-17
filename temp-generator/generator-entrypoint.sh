@@ -3,7 +3,8 @@
 source /ci-tool-common.sh
 
 ############################################################
-# Functions 
+# Functions
+############################################################
 
 checkCheckedOutRepo() {
   echo Checking we have checked out ${GITHUB_ACTION_REPOSITORY}...
@@ -22,6 +23,7 @@ checkCheckedOutRepo() {
 
 ############################################################
 # Main code
+############################################################
 cat ${GITHUB_EVENT_PATH}
 
 echo "========="
@@ -35,9 +37,6 @@ ls -al
 
 checkCheckedOutRepo
 initGit
-
-logWarn "Temp exit"
-exit 1
 
 ############################################################
 # Get parameters from the event
