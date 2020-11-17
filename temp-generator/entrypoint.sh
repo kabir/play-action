@@ -1,9 +1,12 @@
 #!/bin/sh -e
 
+ERROR_COLOUR='\033[0;31m'
+RESET_COLOUT='\033[0m'
+
 # keep track of the last executed command
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 # echo an error message before exiting
-trap 'echo "ERROR \"${last_command}\" failed with exit code $?."' EXIT
+trap 'echo "${GREEN}ERROR \"${last_command}\" failed with exit code $?.${RESET}"' EXIT
 
 
 ############################################################
