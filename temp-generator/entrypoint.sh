@@ -29,11 +29,15 @@ echo env
 env
 echo "========="
 
-echo "Current directory:"
+echo "Current directory & contents:"
 pwd
+ls -al
 
 checkCheckedOutRepo
 initGit
+
+logWarn "Temp exit"
+exit 1
 
 ############################################################
 # Get parameters from the event
