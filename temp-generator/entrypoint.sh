@@ -2,15 +2,6 @@
 
 source /ci-tool-common.sh
 
-# ERROR_COLOUR='\033[0;31m'
-# RESET_COLOUR='\033[0m'
-
-# # keep track of the last executed command
-# trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
-# # echo an error message before exiting
-# trap 'echo -e "${ERROR_COLOUR}ERROR \"${last_command}\" failed with exit code $?.${RESET_COLOUR}"' EXIT
-
-
 ############################################################
 # Functions 
 
@@ -33,6 +24,7 @@ checkCheckedOutRepo() {
 # Main code
 cat ${GITHUB_EVENT_PATH}
 checkCheckedOutRepo
+initGit
 
 ############################################################
 # Get parameters from the event
