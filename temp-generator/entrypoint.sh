@@ -23,6 +23,12 @@ checkCheckedOutRepo() {
 ############################################################
 # Main code
 cat ${GITHUB_EVENT_PATH}
+
+echo "========="
+echo env
+env
+echo "========="
+
 checkCheckedOutRepo
 initGit
 
