@@ -1,12 +1,14 @@
 #!/bin/sh -e
 
-ERROR_COLOUR='\033[0;31m'
-RESET_COLOUR='\033[0m'
+source /ci-tool-common.sh
 
-# keep track of the last executed command
-trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
-# echo an error message before exiting
-trap 'echo -e "${ERROR_COLOUR}ERROR \"${last_command}\" failed with exit code $?.${RESET_COLOUR}"' EXIT
+# ERROR_COLOUR='\033[0;31m'
+# RESET_COLOUR='\033[0m'
+
+# # keep track of the last executed command
+# trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
+# # echo an error message before exiting
+# trap 'echo -e "${ERROR_COLOUR}ERROR \"${last_command}\" failed with exit code $?.${RESET_COLOUR}"' EXIT
 
 
 ############################################################
@@ -37,7 +39,7 @@ checkCheckedOutRepo
 issue_number="$(jq --raw-output '.issue.number' ${GITHUB_EVENT_PATH})"
 echo "Issue number: ${issue_number}"
 if [[ -z "${issue_number}" ]]; then
-  echo "Could not determine issue number"
+  logError "Could not determine issue number"
   exit 1
 fi
 
@@ -54,43 +56,37 @@ echo "Issue body:"
 echo "${issue_body}"
 
 branch="multi-repo-ci-branch-${issue_number}"
-echo "Working branch: ${branch}"
-
-# Intentional error
-git checkout not-there
 
 ############################################################
 # Checkout and configure
+echo "Creating branch ${branch}"
 git checkout -b "${branch}"
-git config --global user.email "ci@example.com"
-git config --global user.name "CI Action"
+# git config --global user.email "ci@example.com"
+# git config --global user.name "CI Action"
 
 
 ############################################################
 # Get the issue body into config.yml
+echo "Saving issue body into config.yml"
 touch config.yml
 echo "${issue_body}" > config.yml
-echo config.yml contents
+echo "config.yml contents:"
 cat config.yml
 
 ############################################################
 # Generate the workflow
+echo "Generating workflow"
 /multi-repo-ci-tool-runner generate-workflow --workflow-dir=.github/workflows --yaml=config.yml --issue=${issue_number} --branch=${branch} --working-dir=.
-
-# TEMP Stuff
-echo $?
-pwd
-ls -al
-echo .github/workflows
-ls -al  .github/workflows
 
 ############################################################
 # Update the issue-data.json created by the tool to:
 # 1) Contain the user who updated the issue
+echo "Set trigger/user=${GITHUB_ACTOR} in issue-data.json"
 tmpfile=$(mktemp)
 jq --arg user "${GITHUB_ACTOR}" '.["trigger"]["user"]=$user' issue-data.json > "${tmpfile}"
 mv "${tmpfile}" issue-data.json
 # 2) Contain the url of the issue triggering the workflow
+echo "Set trigger/issue=${issue_url} in issue-data.json"
 tmpfile=$(mktemp)
 jq --arg url "${issue_url}" '.["trigger"]["issue"]=$url' issue-data.json > "${tmpfile}"
 mv "${tmpfile}" issue-data.json
@@ -112,7 +108,18 @@ fi
 
 ############################################################
 # Commit and push the workflow to the branch
+echo "Committing generated workflow"
 git add -A
 git commit -m "Generated Workflow: #${issue_number} - ${issue_title}"
+
+# Tmp stuff
+logError "Test error"
+echo "..."
+logWarn "Intentional error coming up"
+echo "..."
+# Intentional error
+git checkout not-there
+
+
 git push --force origin "${branch}"
 
