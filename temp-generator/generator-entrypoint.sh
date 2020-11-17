@@ -80,6 +80,15 @@ cat config.yml
 ############################################################
 # Generate the workflow
 echo "Generating workflow"
+# Tmp stuff
+echo "Folder: $(pwd)"
+ls -al
+ls -al .github
+ls -al .github/workflows
+ls -al config.yml
+echo ${issue_number}
+echo ${branch}
+
 echo "/multi-repo-ci-tool-runner generate-workflow --workflow-dir=.github/workflows --yaml=config.yml --issue=${issue_number} --branch=${branch} --working-dir=."
 /multi-repo-ci-tool-runner generate-workflow --workflow-dir=.github/workflows --yaml=config.yml --issue=${issue_number} --branch=${branch} --working-dir=.
 
