@@ -1,4 +1,4 @@
-name: Overbård Multi Repo CI - Workflow Generator
+name: Overbård Multi Repo CI - Workflow Generator Action
 description: Generates the workflow to do the multi-component testing
 # inputs:
 #   token:
