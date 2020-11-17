@@ -6,7 +6,7 @@ RESET_COLOUT='\033[0m'
 # keep track of the last executed command
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 # echo an error message before exiting
-trap 'echo "${GREEN}ERROR \"${last_command}\" failed with exit code $?.${RESET}"' EXIT
+trap 'echo -e "${GREEN}ERROR \"${last_command}\" failed with exit code $?.${RESET}"' EXIT
 
 
 ############################################################
