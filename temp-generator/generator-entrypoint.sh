@@ -134,3 +134,5 @@ git commit -m "Generated Workflow: #${issue_number} - ${issue_title}"
 echo "Pushing to origin ${branch}"
 git push --force origin "${branch}"
 
+# Disable the EXIT trap set by /ci-tool-common.sh
+trap - EXIT

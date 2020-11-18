@@ -57,6 +57,7 @@ addIPv6LocalhostToEtcHosts() {
   set -e
 
   if [[ -n "${TMP}" ]]; then
+    echo "Adding '::1 localhost' to /etc/hosts"
     sudo bash -c 'echo ::1 localhost >> /etc/hosts'
   fi
 }
@@ -120,6 +121,7 @@ makeObArtifactsAndStatusAbsolutePaths() {
 
 mergeLargeFilesInArtifactsDirectory() {
   if [[ "${IS_CUSTOM_COMPONENT}" == "1" ]]; then
+    echo "Merging split files in \$OB_ARTIFACTS_DIR"
     /multi-repo-ci-tool-runner merge-large-files-in-directory "${OB_ARTIFACTS_DIR}"
   fi
 }
@@ -132,6 +134,11 @@ echo Performing pre-build preparation work
 
 # Temporary
 cat ${GITHUB_EVENT_PATH}
+echo "========="
+echo ENVIRONMENT:
+env
+echo "========="
+
 checkCheckedOutRepo
 
 refreshStorageCache
@@ -141,3 +148,6 @@ setSha1OutputVariable
 addIPv6LocalhostToEtcHosts
 makeObArtifactsAndStatusAbsolutePaths
 mergeLargeFilesInArtifactsDirectory
+
+# Disable the EXIT trap set by /ci-tool-common.sh
+trap - EXIT

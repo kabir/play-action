@@ -107,6 +107,12 @@ pushArtifactsBranch() {
   fi
 }
 
+splitLargeFilesInArtifactsDirectory() {
+  if [[ -d ".ci-tools/repo-backups" && ! -z "$(ls -A .ci-tools/repo-backups)" ]]; then
+    /multi-repo-ci-tool-runner split-large-files-in-directory ${OB_ARTIFACTS_DIR}
+  fi
+}
+
 ############################################################
 # Main code
 ############################################################
@@ -117,6 +123,7 @@ cat ${GITHUB_EVENT_PATH}
 checkCheckedOutRepo
 
 # Split large files
+
 /multi-repo-ci-tool-runner split-large-files-in-directory ${OB_ARTIFACTS_DIR}
 if [[ "$IS_BUILD_JOB" == 1 ]]; then
   /multi-repo-ci-tool.jar backup-maven-artifacts ./pom.xml .m2/repository .ci-tools/repo-backups/${COMPONENT}
@@ -126,3 +133,6 @@ fi
 # Run multi-repo-ci-tool 'split-large-files-in-directory' command
 # Backup maven artifacts (builds only)
 # Git command-line work (push the .citools stuff)
+
+# Disable the EXIT trap set by /ci-tool-common.sh
+trap - EXIT
