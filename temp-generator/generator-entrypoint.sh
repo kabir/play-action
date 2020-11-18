@@ -84,13 +84,8 @@ cat config.yml
 # Generate the workflow
 echo "Generating workflow"
 # Tmp stuff
-echo "Folder: $(pwd)"
+echo "Folder: $(pwd) and contents"
 ls -al
-ls -al .github
-ls -al .github/workflows
-ls -al config.yml
-echo ${issue_number}
-echo ${branch}
 
 echo Calling workflow genenerator with arguments:
 echo     --workflow-dir=.github/workflows
