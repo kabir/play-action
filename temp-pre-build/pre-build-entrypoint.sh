@@ -77,7 +77,7 @@ setSha1OutputVariable() {
 setProjectVersionOutputVariable() {
   if [[ ${IS_BUILD_JOB} == "1" ]]; then
     echo "Parsing project version"
-    TMP=/multi-repo-ci-tool-runner grab-maven-project-version ./pom.xml
+    TMP=$(/multi-repo-ci-tool-runner grab-maven-project-version ./pom.xml)
     echo "::set-output name=version::${TMP}"
     echo set 'version' output variable to ${TMP}
   fi
