@@ -1,37 +1,7 @@
 #!/bin/sh -e
 
-# Temporary
-
-echo "ls /"
-ls -al /
-echo "ls /home"
-ls -al /home
-# echo "ls /home/runner"
-# ls -al /home/runner
-# echo "ls /home/runner/.m2"
-# ls -al /home/runner/.m2
-# echo "ls /home/runner/.m2/repository"
-# ls -al /home/runner/.m2/repository
-
-echo 'ls ~'
-ls -al ~
-
-# echo 'ls ~/.m2'
-# ls -al ~/.m2
-
-echo 'ls .'
-ls -al .
-echo 'ls .m2'
-ls -al .m2
-echo 'ls.m2/repository'
-ls -al .m2/repository
-
-
-echo "DEBUG Sourcing common"
 # This one comes from the quay.io/overbaard/ob-ci-action-tooling Docker image
 source /ci-tool-common.sh
-
-echo "DEBUG Sourced!"
 
 ############################################################
 # Input variables and validation
@@ -122,10 +92,22 @@ refreshStorageCache() {
   cd "${GITHUB_WORKSPACE}"
 }
 
-overlaySnapshotsOnLocalMavenRepo() {
+tarDownloadedSnapshots() {
+  # We don't have access to the runner's .m2/ directory from here, so work around that
+  # by using a temporary directory that we will move into the $GITHUB_WORKSPACE
   if [[ -d ".ci-tools/repo-backups" && ! -z "$(ls -A .ci-tools/repo-backups)" ]]; then
+    tmp="$(mktemp -d)"
+
     echo "Overlaying snapshots from previous jobs "
-    /multi-repo-ci-tool-runner overlay-backed-up-maven-artifacts ${GITHUB_WORKSPACE}/.m2/repository .ci-tools/repo-backups
+    /multi-repo-ci-tool-runner overlay-backed-up-maven-artifacts ${tmp} .ci-tools/repo-backups
+
+    # Create the tar
+    cd "${tmp}"
+    tar cvfz "${GITHUB_WORKSPACE}/.snapshots.tgz"
+    cd "${GITHUB_WORKSPACE}"
+    rm -rf "${tmp}"
+    echo "::set-output name=snapshots-tar::.snapshots.tgz"
+
   fi
 }
 
@@ -171,7 +153,7 @@ echo "========="
 checkCheckedOutRepo
 
 refreshStorageCache
-overlaySnapshotsOnLocalMavenRepo
+tarDownloadedSnapshots
 setProjectVersionOutputVariable
 setSha1OutputVariable
 addIPv6LocalhostToEtcHosts

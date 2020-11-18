@@ -12,6 +12,8 @@ outputs:
     description: "The SHA-1 of the component branch, if we are a build step"
   version:
     description: "The version build from the component branch, if we are a build step"
+  snapshots-tar:
+    description: "File name of cached SNAPSHOTS tar.gz to be overlayed on ~/.m2. Relative to the ${GITHUB_WORKSPACE} folder."
 
 runs:
   using: 'docker'
