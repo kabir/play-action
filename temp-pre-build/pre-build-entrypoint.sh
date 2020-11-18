@@ -1,9 +1,38 @@
 #!/bin/sh -e
+
+# Temporary
+
+echo "ls /"
+ls -al /
+echo "ls /home"
+ls -al /home
+# echo "ls /home/runner"
+# ls -al /home/runner
+# echo "ls /home/runner/.m2"
+# ls -al /home/runner/.m2
+# echo "ls /home/runner/.m2/repository"
+# ls -al /home/runner/.m2/repository
+
+echo 'ls ~'
+ls -al ~
+
+# echo 'ls ~/.m2'
+# ls -al ~/.m2
+
+echo 'ls .'
+ls -al .
+echo 'ls .m2'
+ls -al .m2
+echo 'ls.m2/repository'
+ls -al .m2/repository
+
+
 echo "DEBUG Sourcing common"
 # This one comes from the quay.io/overbaard/ob-ci-action-tooling Docker image
 source /ci-tool-common.sh
 
 echo "DEBUG Sourced!"
+
 ############################################################
 # Input variables and validation
 ############################################################
