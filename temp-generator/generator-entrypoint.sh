@@ -135,4 +135,5 @@ echo "Pushing to origin ${branch}"
 git push --force origin "${branch}"
 
 # Disable the EXIT trap set by /ci-tool-common.sh
+echo "Action done!"
 trap - EXIT

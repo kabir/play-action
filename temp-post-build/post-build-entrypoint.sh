@@ -120,10 +120,16 @@ echo Performing pre-build preparation work
 
 # Temporary
 cat ${GITHUB_EVENT_PATH}
+echo "========="
+echo ENVIRONMENT:
+env
+echo "========="
+
+
+
 checkCheckedOutRepo
 
 # Split large files
-
 /multi-repo-ci-tool-runner split-large-files-in-directory ${OB_ARTIFACTS_DIR}
 if [[ "$IS_BUILD_JOB" == 1 ]]; then
   /multi-repo-ci-tool.jar backup-maven-artifacts ./pom.xml .m2/repository .ci-tools/repo-backups/${COMPONENT}
@@ -134,5 +140,6 @@ fi
 # Backup maven artifacts (builds only)
 # Git command-line work (push the .citools stuff)
 
+echo "Action done!"
 # Disable the EXIT trap set by /ci-tool-common.sh
 trap - EXIT

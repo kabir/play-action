@@ -80,7 +80,7 @@ setProjectVersionOutputVariable() {
     echo "Parsing project version"
     TMP=$(/multi-repo-ci-tool-runner grab-maven-project-version ./pom.xml)
     echo "::set-output name=version::${TMP}"
-    echo set 'version' output variable to ${TMP}
+    echo "set 'version' output variable to ${TMP}"
   fi
 }
 
@@ -149,5 +149,9 @@ addIPv6LocalhostToEtcHosts
 makeObArtifactsAndStatusAbsolutePaths
 mergeLargeFilesInArtifactsDirectory
 
+echo "Action done!"
 # Disable the EXIT trap set by /ci-tool-common.sh
 trap - EXIT
+
+# Temp stuff
+echo "OB_ARTIFACTS_DIR: ${OB_ARTIFACTS_DIR}"
