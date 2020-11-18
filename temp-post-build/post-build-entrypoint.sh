@@ -156,7 +156,7 @@ checkCheckedOutRepo
 splitLargeFilesInArtifactsDirectory
 
 if [[ "$IS_BUILD_JOB" == 1 ]]; then
-  /multi-repo-ci-tool.jar backup-maven-artifacts ./pom.xml .m2/repository .ci-tools/repo-backups/${COMPONENT}
+  /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml .m2/repository .ci-tools/repo-backups/${COMPONENT}
 fi
 
 pushToCache
