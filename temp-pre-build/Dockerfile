@@ -6,4 +6,4 @@ COPY pre-build-entrypoint.sh /pre-build-entrypoint.sh
 # ENTRYPOINT ["/entrypoint.sh"]
 # Allows variable substitution
 #ENTRYPOINT ["sh", "-c", "/pre-build-entrypoint.sh $*"]
-ENTRYPOINT ["sh", "-c", "/pre-build-entrypoint.sh"]
+ENTRYPOINT ["sh", "-c", "/pre-build-entrypoint.sh", "$*"]
