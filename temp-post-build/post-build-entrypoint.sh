@@ -112,8 +112,27 @@ pushArtifactsBranch() {
 }
 
 splitLargeFilesInArtifactsDirectory() {
-  if [[ -d ".ci-tools/repo-backups" && ! -z "$(ls -A .ci-tools/repo-backups)" ]]; then
+  if [[ ${IS_CUSTOM_COMPONENT} == "1" ]]; then
     /multi-repo-ci-tool-runner split-large-files-in-directory ${OB_ARTIFACTS_DIR}
+  fi
+}
+
+pushToCache() {
+  if [[ "${IS_BUILD_JOB}" == "1" ]]; then
+    what_to_add="-A"
+  elif [[ "${IS_CUSTOM_COMPONENT}" == "1" ]]; then
+    # For custom component non-build jobs we only back up the $OB_ARTIFACTS_DIR directory
+    what_to_add="${OB_ARTIFACTS_DIR}"
+  fi
+
+  if [[ -n "${what_to_add}" ]]; then
+    git add "${what_to_add}"
+    branch_status=$(git status --porcelain)
+    [[ -n "${branch_status}" ]] && git commit -m "Store any artifacts copied to \${OB_ARTIFACTS_DIR} by wildfly-core-ts-smoke" || echo "No changes"
+    TMP=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+    git fetch origin ${TMP}
+    git rebase origin/${TMP}
+    git push origin ${TMP}
   fi
 }
 
@@ -128,21 +147,20 @@ echo "========="
 echo ENVIRONMENT:
 env
 echo "========="
-
+echo "Current directory $(pwd) contents":
+ls -al
 
 
 checkCheckedOutRepo
 
-# Split large files
-/multi-repo-ci-tool-runner split-large-files-in-directory ${OB_ARTIFACTS_DIR}
+splitLargeFilesInArtifactsDirectory
+
 if [[ "$IS_BUILD_JOB" == 1 ]]; then
   /multi-repo-ci-tool.jar backup-maven-artifacts ./pom.xml .m2/repository .ci-tools/repo-backups/${COMPONENT}
 fi
 
-# Push the branch with the a
-# Run multi-repo-ci-tool 'split-large-files-in-directory' command
-# Backup maven artifacts (builds only)
-# Git command-line work (push the .citools stuff)
+pushToCache
+
 
 echo "Action done!"
 # Disable the EXIT trap set by /ci-tool-common.sh
