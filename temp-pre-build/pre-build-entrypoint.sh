@@ -1,26 +1,36 @@
 #!/bin/sh -e
+echo "DEBUG all args:"
+echo "$@"
 
-set -x
-
+echo "DEBUG Sourcing common"
 # This one comes from the quay.io/overbaard/ob-ci-action-tooling Docker image
 source /ci-tool-common.sh
 
+echo "DEBUG Sourced!"
 ############################################################
 # Input variables and validation
 ############################################################
-IS_BUILD_JOB="${1}"
-IS_CUSTOM_COMPONENT="${1}"
+IS_BUILD_JOB=${1}
+IS_CUSTOM_COMPONENT=${1}
+
+echo "IS_BUILD_JOB: ${IS_BUILD_JOB}"
+echo "IS_CUSTOM_COMPONENT: ${IS_CUSTOM_COMPONENT}"
+
 
 if [[ "${IS_BUILD_JOB}" != "0" && "${IS_BUILD_JOB}" != "1" ]]; then
-  logError expected 0 or 1 for 'build' input!
+  echo "DEBUG bad 'build arg'"
+  logError "expected 0 or 1 for 'build' input!"
   exit 1
 fi
 if [[ "${IS_CUSTOM_COMPONENT}" != "0" && "${IS_CUSTOM_COMPONENT}" != "1" ]]; then
-  logError expected 0 or 1 for 'custom' input!
+  echo "DEBUG bad 'component arg'"
+  logError "expected 0 or 1 for 'custom' input!"
   exit 1
 fi
 if [[ "${IS_BUILD_JOB}" == "0" && "${IS_CUSTOM_COMPONENT}" == "0" ]]; then
-  logError build=0 and custom=0 is an invalid combination!
+  echo "DEBUG bad 'build and custom combo'"
+
+  logError "build=0 and custom=0 is an invalid combination!"
   exit 1
 fi
 

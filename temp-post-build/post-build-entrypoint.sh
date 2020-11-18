@@ -11,18 +11,18 @@ IS_BUILD_JOB="${2}"
 IS_CUSTOM_COMPONENT="${3}"
 
 if [[ -z "${COMPONENT}" ]]; then
-  logError 'component' input can not be empty!
+  logError "'component' input can not be empty!"
 fi
 if [[ "${IS_BUILD_JOB}" != "0" && "${IS_BUILD_JOB}" != "1" ]]; then
-  logError expected 0 or 1 for 'build' input!
+  logError "expected 0 or 1 for 'build' input!"
   exit 1
 fi
 if [[ "${IS_CUSTOM_COMPONENT}" != "0" && "${IS_CUSTOM_COMPONENT}" != "1" ]]; then
-  logError expected 0 or 1 for 'custom' input!
+  logError "expected 0 or 1 for 'custom' input!"
   exit 1
 fi
 if [[ "${IS_BUILD_JOB}" == "0" && "${IS_CUSTOM_COMPONENT}" == "0" ]]; then
-  logError build=0 and custom=0 is an invalid combination!
+  logError "build=0 and custom=0 is an invalid combination!"
   exit 1
 fi
 
