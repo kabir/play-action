@@ -84,38 +84,38 @@ refreshStorageCache() {
 #   fi
 # }
 
-pushArtifactsBranch() {
-  echo "Backng up artifacts"
-  cd .ci-tools
-  git config --local user.name "CI Action"
-  git config --local user.email "ci@example.com"
+# pushArtifactsBranch() {
+#   echo "Backng up artifacts"
+#   cd .ci-tools
+#   git config --local user.name "CI Action"
+#   git config --local user.email "ci@example.com"
 
-  ${OB_STATUS_TEXT}
-  if [[ -f "${OB_STATUS_TEXT}" ]] && [[ ! -s "${OB_STATUS_TEXT}" ]] ; then
-    echo "Removing empty \$OB_STATUS_TEXT file"
-    rm "${OB_STATUS_TEXT}"
-  fi
+#   ${OB_STATUS_TEXT}
+#   if [[ -f "${OB_STATUS_TEXT}" ]] && [[ ! -s "${OB_STATUS_TEXT}" ]] ; then
+#     echo "Removing empty \$OB_STATUS_TEXT file"
+#     rm "${OB_STATUS_TEXT}"
+#   fi
 
-  git add -A
-  branch_status=$(git status --porcelain)
-  if [[ -n "${branch_status}" ]]; then
-    echo "Committing artifact changes"
-    git commit -m "Back up the artifacts created by wildfly-core"
+#   git add -A
+#   branch_status=$(git status --porcelain)
+#   if [[ -n "${branch_status}" ]]; then
+#     echo "Committing artifact changes"
+#     git commit -m "Back up the artifacts created by wildfly-core"
 
-    TMP=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+#     TMP=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 
-    echo "Fetching origin ${TMP} branch..."
-    git fetch origin ${TMP}
+#     echo "Fetching origin ${TMP} branch..."
+#     git fetch origin ${TMP}
 
-    echo "Rebasing on origin/${TMP}..."
-    git rebase origin/${TMP}
+#     echo "Rebasing on origin/${TMP}..."
+#     git rebase origin/${TMP}
 
-    echo "Pushing origin ${TMP}..."
-    git push origin ${TMP}
-  else
-     echo "No changes"
-  fi
-}
+#     echo "Pushing origin ${TMP}..."
+#     git push origin ${TMP}
+#   else
+#      echo "No changes"
+#   fi
+# }
 
 splitLargeFilesInArtifactsDirectory() {
   if [[ ${IS_CUSTOM_COMPONENT} == "1" ]]; then
@@ -132,13 +132,22 @@ pushToCache() {
   fi
 
   if [[ -n "${what_to_add}" ]]; then
+    cd .ci-tools
+    git config --global user.email "you@example.com"
+    git config --global user.name "Your Name"
+
     git add "${what_to_add}"
     branch_status=$(git status --porcelain)
-    [[ -n "${branch_status}" ]] && git commit -m "Store any artifacts copied to \${OB_ARTIFACTS_DIR} by wildfly-core-ts-smoke" || echo "No changes"
-    TMP=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-    git fetch origin ${TMP}
-    git rebase origin/${TMP}
-    git push origin ${TMP}
+    if [[ -n ${branch_status} ]]; then
+      git commit -m "Store any artifacts copied to \${OB_ARTIFACTS_DIR} by wildfly-core-ts-smoke"
+      TMP=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+      git fetch origin ${TMP}
+      git rebase origin/${TMP}
+      git push origin ${TMP}
+    else
+     echo "No changes"
+    fi
+
   fi
 }
 
