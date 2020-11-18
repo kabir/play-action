@@ -27,19 +27,21 @@ checkCheckedOutRepo() {
 cat ${GITHUB_EVENT_PATH}
 
 echo "========="
-echo env
+echo ENVIRONMENT:
 env
 echo "========="
 
-echo "Current directory & contents:"
-pwd
-ls -al
+# echo "Current directory & contents:"
+# pwd
+# ls -al
 
 checkCheckedOutRepo
 initGit
 
 ############################################################
 # Get parameters from the event
+echo Parsing parameters...
+
 issue_number="$(jq --raw-output '.issue.number' ${GITHUB_EVENT_PATH})"
 echo "Issue number: ${issue_number}"
 if [[ -z "${issue_number}" ]]; then
@@ -48,18 +50,19 @@ if [[ -z "${issue_number}" ]]; then
 fi
 
 issue_title="$(jq --raw-output '.issue.title' ${GITHUB_EVENT_PATH})"
-echo "Issue title: ${issue_title}"
+echo "Issue title (\$issue_title): ${issue_title}"
 
 issue_url="$(jq --raw-output '.issue.url' ${GITHUB_EVENT_PATH})"
-echo "Issue URL: ${issue_url}"
+echo "Issue URL (\$issue_url): ${issue_url}"
 
 issue_body="$(jq --raw-output '.issue.body' ${GITHUB_EVENT_PATH})"
 # unescape issue body (it contains \r\n entries)
 issue_body=$(printf '%b\n' "${issue_body}")
-echo "Issue body:"
+echo "Issue body (\$issue_body):"
 echo "${issue_body}"
 
 branch="multi-repo-ci-branch-${issue_number}"
+echo "Branch (\$branch): ${branch}"
 
 ############################################################
 # Checkout and configure
@@ -89,8 +92,16 @@ ls -al config.yml
 echo ${issue_number}
 echo ${branch}
 
-echo "/multi-repo-ci-tool-runner generate-workflow --workflow-dir=.github/workflows --yaml=config.yml --issue=${issue_number} --branch=${branch} --working-dir=."
+echo Calling workflow genenerator with arguments:
+echo     --workflow-dir=.github/workflows
+echo     --yaml=config.yml
+echo     --issue=${issue_number}
+echo     --branch=${branch}
+echo     --working-dir=.
+
 /multi-repo-ci-tool-runner generate-workflow --workflow-dir=.github/workflows --yaml=config.yml --issue=${issue_number} --branch=${branch} --working-dir=.
+
+echo "Workflow genenerator done!"
 
 ############################################################
 # Update the issue-data.json created by the tool to:
