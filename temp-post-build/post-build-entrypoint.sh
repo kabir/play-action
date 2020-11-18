@@ -161,9 +161,22 @@ checkCheckedOutRepo
 
 splitLargeFilesInArtifactsDirectory
 
+echo "Is it build job?"
 if [[ "$IS_BUILD_JOB" == 1 ]]; then
+
+  # Temp
+  echo "It is build job"
+  echo "ls -al"
+  ls -al
+  echo "ls -al ${GITHUB_WORKSPACE}"
+  ls -al ${GITHUB_WORKSPACE}
+
   temp_repo="$(mktemp -d)"
   cd "${temp_repo}"
+  # temp
+  echo "Untarring ${GITHUB_WORKSPACE}/${SNAPSHOTS}. Is it there"
+  ls "${GITHUB_WORKSPACE}/${SNAPSHOTS}"
+
   tar xfzv "${GITHUB_WORKSPACE}/${SNAPSHOTS}"
   cd "${GITHUB_WORKSPACE}"
   rm "${GITHUB_WORKSPACE}/${SNAPSHOTS}"
