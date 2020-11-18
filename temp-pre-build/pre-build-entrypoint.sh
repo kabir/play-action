@@ -84,18 +84,16 @@ setProjectVersionOutputVariable() {
 }
 
 refreshStorageCache() {
-  if [[ -z "${OB_MAVEN_DEPENDENCY_VERSIONS}" ]]; then
-    echo "Refreshing storage cache"
-    cd .ci-tools
-    TMP=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-    git fetch origin ${TMP}
-    git rebase origin/${TMP}
-    cd "${GITHUB_WORKSPACE}"
-  fi
+  echo "Refreshing storage cache"
+  cd .ci-tools
+  TMP=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+  git fetch origin ${TMP}
+  git rebase origin/${TMP}
+  cd "${GITHUB_WORKSPACE}"
 }
 
 overlaySnapshotsOnLocalMavenRepo() {
-  if [[ -z "${OB_MAVEN_DEPENDENCY_VERSIONS}" ]]; then
+  if [[ -d ".ci-tools/repo-backups" && ! -z "$(ls -A .ci-tools/repo-backups)" ]]; then
     echo "Overlaying snapshots from previous jobs "
     /multi-repo-ci-tool-runner overlay-backed-up-maven-artifacts ${GITHUB_WORKSPACE}/.m2/repository .ci-tools/repo-backups
   fi
