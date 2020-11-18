@@ -10,6 +10,10 @@ COMPONENT="${INPUT_COMPONENT}"
 IS_BUILD_JOB=${INPUT_BUILD}
 IS_CUSTOM_COMPONENT=${INPUT_CUSTOM}
 
+echo "COMPONENT: ${COMPONENT}"
+echo "IS_BUILD_JOB: ${IS_BUILD_JOB}"
+echo "IS_CUSTOM_COMPONENT: ${IS_CUSTOM_COMPONENT}"
+
 if [[ -z "${COMPONENT}" ]]; then
   logError "'component' input can not be empty!"
 fi
