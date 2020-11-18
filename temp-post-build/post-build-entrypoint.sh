@@ -6,9 +6,9 @@ source /ci-tool-common.sh
 ############################################################
 # Input variables and validation
 ############################################################
-COMPONENT="${1}"
-IS_BUILD_JOB="${2}"
-IS_CUSTOM_COMPONENT="${3}"
+COMPONENT="${INPUT_COMPONENT}"
+IS_BUILD_JOB=${INPUT_BUILD}
+IS_CUSTOM_COMPONENT=${INPUT_CUSTOM}
 
 if [[ -z "${COMPONENT}" ]]; then
   logError "'component' input can not be empty!"

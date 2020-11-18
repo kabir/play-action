@@ -1,7 +1,4 @@
 #!/bin/sh -e
-echo "DEBUG all args:"
-echo "$@"
-
 echo "DEBUG Sourcing common"
 # This one comes from the quay.io/overbaard/ob-ci-action-tooling Docker image
 source /ci-tool-common.sh
@@ -10,8 +7,8 @@ echo "DEBUG Sourced!"
 ############################################################
 # Input variables and validation
 ############################################################
-IS_BUILD_JOB=${1}
-IS_CUSTOM_COMPONENT=${1}
+IS_BUILD_JOB=${INPUT_BUILD}
+IS_CUSTOM_COMPONENT=${INPUT_CUSTOM}
 
 echo "IS_BUILD_JOB: ${IS_BUILD_JOB}"
 echo "IS_CUSTOM_COMPONENT: ${IS_CUSTOM_COMPONENT}"
