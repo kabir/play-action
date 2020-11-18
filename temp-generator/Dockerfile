@@ -5,4 +5,4 @@ COPY generator-entrypoint.sh /generator-entrypoint.sh
 
 # ENTRYPOINT ["/entrypoint.sh"]
 # Allows variable substitution
-ENTRYPOINT ["sh", "-c", "/generator-entrypoint.sh $*"]
+ENTRYPOINT ["sh", "-c", "/generator-entrypoint.sh"]
