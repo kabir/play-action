@@ -9,13 +9,19 @@ source /ci-tool-common.sh
 COMPONENT="${INPUT_COMPONENT}"
 IS_BUILD_JOB=${INPUT_BUILD}
 IS_CUSTOM_COMPONENT=${INPUT_CUSTOM}
+SNAPSHOTS=${INPUT_SNAPSHOTS}
 
 echo "COMPONENT: ${COMPONENT}"
 echo "IS_BUILD_JOB: ${IS_BUILD_JOB}"
 echo "IS_CUSTOM_COMPONENT: ${IS_CUSTOM_COMPONENT}"
+echo "SNAPSHOTS: ${SNAPSHOTS}"
+
 
 if [[ -z "${COMPONENT}" ]]; then
   logError "'component' input can not be empty!"
+fi
+if [[ -z "${SNAPSHOTS}" ]]; then
+  logError "'snapshots' input can not be empty!"
 fi
 if [[ "${IS_BUILD_JOB}" != "0" && "${IS_BUILD_JOB}" != "1" ]]; then
   logError "expected 0 or 1 for 'build' input!"
@@ -156,7 +162,14 @@ checkCheckedOutRepo
 splitLargeFilesInArtifactsDirectory
 
 if [[ "$IS_BUILD_JOB" == 1 ]]; then
-  /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml .m2/repository .ci-tools/repo-backups/${COMPONENT}
+  temp_repo="$(mktemp -d)"
+  cd "${temp_repo}"
+  tar xfzv "${GITHUB_WORKSPACE}/${SNAPSHOTS}"
+  cd "${GITHUB_WORKSPACE}"
+  rm "${GITHUB_WORKSPACE}/${SNAPSHOTS}"
+
+  # This does some further trimming just for our snapshots, but might not be needed if we just do them all in one go
+  /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml "${temp_repo}" .ci-tools/repo-backups/${COMPONENT}
 fi
 
 pushToCache
