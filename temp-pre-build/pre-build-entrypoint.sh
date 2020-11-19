@@ -97,19 +97,28 @@ refreshStorageCache() {
 tarDownloadedSnapshots() {
   # We don't have access to the runner's .m2/ directory from here, so work around that
   # by using a temporary directory that we will move into the $GITHUB_WORKSPACE
-  if [[ -d ".ci-tools/repo-backups" && ! -z "$(ls -A .ci-tools/repo-backups)" ]]; then
+  if [[ -d ".ci-tools/repo-backups" && -n "$(ls -A .ci-tools/repo-backups)" ]]; then
     tmp="$(mktemp -d)"
 
-    echo "Overlaying snapshots from previous jobs "
+    echo "Overlaying snapshots from previous jobs"
     /multi-repo-ci-tool-runner overlay-backed-up-maven-artifacts ${tmp} .ci-tools/repo-backups
 
     # Create the tar
     cd "${tmp}"
-    tar cvfz "${GITHUB_WORKSPACE}/.snapshots.tgz"
-    cd "${GITHUB_WORKSPACE}"
-    rm -rf "${tmp}"
-    echo "::set-output name=snapshots-tar::.snapshots.tgz"
 
+    # TMP
+    echo "In tmp folder ${tmp}. Directory contents:"
+    ls -al
+    echo "Trying to tar"
+
+    tar cvfz "${GITHUB_WORKSPACE}/.snapshots.tgz"
+    echo "Tarred"
+    cd "${GITHUB_WORKSPACE}"
+    echo "Back in workspace"
+    rm -rf "${tmp}"
+    echo "Removed tmp dir"
+    echo "::set-output name=snapshots-tar::.snapshots.tgz"
+    echo "Output variable set"
   fi
 }
 

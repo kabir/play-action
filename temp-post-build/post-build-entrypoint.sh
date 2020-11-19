@@ -153,6 +153,36 @@ pushToCache() {
   fi
 }
 
+copySnapshotsToCache() {
+  if [[ "$IS_BUILD_JOB" == 1 ]]; then
+
+    # Temp
+    echo "It is build job"
+    echo "ls -al"
+    ls -al
+    echo "ls -al ${GITHUB_WORKSPACE}"
+    ls -al ${GITHUB_WORKSPACE}
+
+
+    snapshots="${GITHUB_WORKSPACE}/${SNAPSHOTS}"
+
+    if [[ -f ${snapshots} ]]; then
+      temp_repo="$(mktemp -d)"
+      cd "${temp_repo}"
+
+      echo "Untarring ${snapshots} to ${temp_repo}"
+
+      tar xfzv "${snapshots}"
+      cd "${GITHUB_WORKSPACE}"
+      rm "${snapshots}"
+      # This does some further trimming just for our snapshots, but might not be needed if we just do them all in one go
+      /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml "${temp_repo}" .ci-tools/repo-backups/${COMPONENT}
+    else
+      echo "No file containing snapshots found: ${snapshots}"
+    fi
+  fi
+}
+
 ############################################################
 # Main code
 ############################################################
@@ -171,31 +201,7 @@ ls -al
 checkCheckedOutRepo
 
 splitLargeFilesInArtifactsDirectory
-
-echo "Is it build job?"
-if [[ "$IS_BUILD_JOB" == 1 ]]; then
-
-  # Temp
-  echo "It is build job"
-  echo "ls -al"
-  ls -al
-  echo "ls -al ${GITHUB_WORKSPACE}"
-  ls -al ${GITHUB_WORKSPACE}
-
-  temp_repo="$(mktemp -d)"
-  cd "${temp_repo}"
-  # temp
-  echo "Untarring ${GITHUB_WORKSPACE}/${SNAPSHOTS}. Is it there"
-  ls "${GITHUB_WORKSPACE}/${SNAPSHOTS}"
-
-  tar xfzv "${GITHUB_WORKSPACE}/${SNAPSHOTS}"
-  cd "${GITHUB_WORKSPACE}"
-  rm "${GITHUB_WORKSPACE}/${SNAPSHOTS}"
-
-  # This does some further trimming just for our snapshots, but might not be needed if we just do them all in one go
-  /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml "${temp_repo}" .ci-tools/repo-backups/${COMPONENT}
-fi
-
+copySnapshotsToCache
 pushToCache
 
 
