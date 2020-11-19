@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+set -x
+
 # This one comes from the quay.io/overbaard/ob-ci-action-tooling Docker image
 source /ci-tool-common.sh
 
@@ -147,7 +149,7 @@ pushToCache() {
     else
      echo "No changes"
     fi
-
+    cd ${GITHUB_WORKSPACE}
   fi
 }
 
