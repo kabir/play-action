@@ -111,7 +111,7 @@ tarDownloadedSnapshots() {
     ls -al
     echo "Trying to tar"
 
-    tar cvfz "${GITHUB_WORKSPACE}/.snapshots.tgz"
+    tar cvfz "${GITHUB_WORKSPACE}/.snapshots.tgz" .
     echo "Tarred"
     cd "${GITHUB_WORKSPACE}"
     echo "Back in workspace"
