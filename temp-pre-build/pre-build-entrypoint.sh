@@ -134,7 +134,7 @@ makeObArtifactsAndStatusAbsolutePaths() {
       mkdir -p "${OB_ARTIFACTS_DIR}"
     fi
 
-    if [[ ! -d "${{OB_STATUS_TEXT}} " ]]; then
+    if [[ ! -d "${OB_STATUS_TEXT} " ]]; then
       echo "No \$OB_STATUS_TEXT file found, creating it"
       touch "${OB_STATUS_TEXT}"
     fi

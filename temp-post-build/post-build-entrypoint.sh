@@ -21,9 +21,11 @@ echo "SNAPSHOTS: ${SNAPSHOTS}"
 
 if [[ -z "${COMPONENT}" ]]; then
   logError "'component' input can not be empty!"
+  exit 1
 fi
 if [[ -z "${SNAPSHOTS}" ]]; then
   logError "'snapshots' input can not be empty!"
+  exit 1
 fi
 if [[ "${IS_BUILD_JOB}" != "0" && "${IS_BUILD_JOB}" != "1" ]]; then
   logError "expected 0 or 1 for 'build' input!"

@@ -12,6 +12,7 @@ inputs:
     required: true
   snapshots:
     description: A tar.gz containing the SNAPSHOTS from the job
+    required: true
 
 runs:
   using: 'docker'
