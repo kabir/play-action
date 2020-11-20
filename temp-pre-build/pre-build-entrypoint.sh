@@ -10,28 +10,35 @@ source /ci-tool-common.sh
 ############################################################
 IS_BUILD_JOB=${INPUT_BUILD}
 IS_CUSTOM_COMPONENT=${INPUT_CUSTOM}
+IS_WORKFLOW_END_JOB=${INPUT_WORKFLOW_END_JOB}
 
 echo "IS_BUILD_JOB: ${IS_BUILD_JOB}"
 echo "IS_CUSTOM_COMPONENT: ${IS_CUSTOM_COMPONENT}"
+echo "IS_WORKFLOW_END_JOB: ${IS_WORKFLOW_END_JOB}"
 
 
 if [[ "${IS_BUILD_JOB}" != "0" && "${IS_BUILD_JOB}" != "1" ]]; then
-  echo "DEBUG bad 'build arg'"
   logError "expected 0 or 1 for 'build' input!"
   exit 1
 fi
 if [[ "${IS_CUSTOM_COMPONENT}" != "0" && "${IS_CUSTOM_COMPONENT}" != "1" ]]; then
-  echo "DEBUG bad 'component arg'"
   logError "expected 0 or 1 for 'custom' input!"
   exit 1
 fi
-if [[ "${IS_BUILD_JOB}" == "0" && "${IS_CUSTOM_COMPONENT}" == "0" ]]; then
-  echo "DEBUG bad 'build and custom combo'"
-
-  logError "build=0 and custom=0 is an invalid combination!"
+if [[ "${IS_WORKFLOW_END_JOB}" != 1 && "${IS_BUILD_JOB}" == "0" && "${IS_CUSTOM_COMPONENT}" == "0" ]]; then
+  logError "build=0 and custom=0 is an invalid combination for non workflow end jobs!"
   exit 1
 fi
-
+if [[ "${IS_WORKFLOW_END_JOB}" == "1" ]]; then
+  if [[ "${IS_BUILD_JOB}" == "1" || "${IS_CUSTOM_COMPONENT}" == "1" ]]; then
+    logError "For workflow end jobs 'build' and 'custom' should both be 0!"
+    exit 1
+  fi
+else
+  # For normal jobs we clone out the tools repo to .ci_tools/, while for
+  # workflow end jobs we clone it to the root workspace directory
+  CI_TOOLS=".ci-tools/"
+fi
 ############################################################
 # Functions
 ############################################################
@@ -87,7 +94,7 @@ setProjectVersionOutputVariable() {
 
 refreshStorageCache() {
   echo "Refreshing storage cache"
-  cd .ci-tools
+  cd "${CI_TOOLS}"
   TMP=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
   git fetch origin ${TMP}
   git rebase origin/${TMP}
@@ -98,11 +105,11 @@ refreshStorageCache() {
 # tarDownloadedSnapshots() {
 #   # We don't have access to the runner's .m2/ directory from here, so work around that
 #   # by using a temporary directory that we will move into the $GITHUB_WORKSPACE
-#   if [[ -d ".ci-tools/repo-backups" && -n "$(ls -A .ci-tools/repo-backups)" ]]; then
+#   if [[ -d "${CI_TOOLS}/repo-backups" && -n "$(ls -A ${CI_TOOLS}/repo-backups)" ]]; then
 #     tmp="$(mktemp -d)"
 
 #     echo "Overlaying snapshots from previous jobs"
-#     /multi-repo-ci-tool-runner overlay-backed-up-maven-artifacts ${tmp} .ci-tools/repo-backups
+#     /multi-repo-ci-tool-runner overlay-backed-up-maven-artifacts ${tmp} ${CI_TOOLS}/repo-backups
 
 #     # Create the tar
 #     cd "${tmp}"
@@ -126,9 +133,9 @@ refreshStorageCache() {
 overlayDownloadedSnapshots() {
   # We don't have access to the runner's .m2/ directory from here, so work around that
   # by using a temporary directory that we will move into the $GITHUB_WORKSPACE
-  if [[ -d ".ci-tools/repo-backups" && -n "$(ls -A .ci-tools/repo-backups)" ]]; then
-    echo "Overlaying snapshots from previous jobs to .ci-tools/repo-backups"
-    /multi-repo-ci-tool-runner overlay-backed-up-maven-artifacts .m2-repo-mount .ci-tools/repo-backups
+  if [[ -d "${CI_TOOLS}/repo-backups" && -n "$(ls -A ${CI_TOOLS}/repo-backups)" ]]; then
+    echo "Overlaying snapshots from previous jobs to ${CI_TOOLS}/repo-backups"
+    /multi-repo-ci-tool-runner overlay-backed-up-maven-artifacts .m2-repo-mount ${CI_TOOLS}/repo-backups
   fi
 }
 

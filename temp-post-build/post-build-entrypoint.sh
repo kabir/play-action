@@ -9,12 +9,14 @@ source /ci-tool-common.sh
 # Input variables and validation
 ############################################################
 COMPONENT="${INPUT_COMPONENT}"
-IS_BUILD_JOB=${INPUT_BUILD}
-IS_CUSTOM_COMPONENT=${INPUT_CUSTOM}
+IS_BUILD_JOB="${INPUT_BUILD}"
+IS_CUSTOM_COMPONENT="${INPUT_CUSTOM}"
+IS_WORKFLOW_END_JOB="${IS_WORKFLOW_END_JOB}"
 
 echo "COMPONENT: ${COMPONENT}"
 echo "IS_BUILD_JOB: ${IS_BUILD_JOB}"
 echo "IS_CUSTOM_COMPONENT: ${IS_CUSTOM_COMPONENT}"
+echo "IS_WORKFLOW_END_JOB: ${IS_WORKFLOW_END_JOB}"
 
 
 if [[ -z "${COMPONENT}" ]]; then
@@ -29,9 +31,19 @@ if [[ "${IS_CUSTOM_COMPONENT}" != "0" && "${IS_CUSTOM_COMPONENT}" != "1" ]]; the
   logError "expected 0 or 1 for 'custom' input!"
   exit 1
 fi
-if [[ "${IS_BUILD_JOB}" == "0" && "${IS_CUSTOM_COMPONENT}" == "0" ]]; then
-  logError "build=0 and custom=0 is an invalid combination!"
+if [[ ${IS_WORKFLOW_END_JOB} != 1 && "${IS_BUILD_JOB}" == "0" && "${IS_CUSTOM_COMPONENT}" == "0" ]]; then
+  logError "build=0 and custom=0 is an invalid combination for non workflow end jobs!"
   exit 1
+fi
+if [[ "${IS_WORKFLOW_END_JOB}" == "1" ]]; then
+  if [[ "${IS_BUILD_JOB}" == "1" || "${IS_CUSTOM_COMPONENT}" == "1" ]]; then
+    logError "For workflow end jobs 'build' and 'custom' should both be 0!"
+    exit 1
+  fi
+else
+  # For normal jobs we clone out the tools repo to .ci_tools/, while for
+  # workflow end jobs we clone it to the root workspace directory
+  CI_TOOLS=".ci-tools/"
 fi
 
 ############################################################
@@ -55,65 +67,13 @@ checkCheckedOutRepo() {
 refreshStorageCache() {
   if [[ -z "${OB_MAVEN_DEPENDENCY_VERSIONS}" ]]; then
     echo "Refreshing storage cache"
-    cd .ci-tools
+    cd "${CI_TOOLS}"
     TMP=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
     git fetch origin ${TMP}
     git rebase origin/${TMP}
     cd "${GITHUB_WORKSPACE}"
   fi
 }
-
-# makeObArtifactsAndStatusAbsolutePaths() {
-#   if [[ ${IS_CUSTOM_COMPONENT} == "1" ]]; then
-#     echo "Converting \$OB_ARTIFACTS_DIR and \$OB_STATUS_TEXT to absolute paths"
-
-#     echo "OB_ARTIFACTS_DIR=${GITHUB_WORKSPACE}/${OB_ARTIFACTS_DIR}" >> "${GITHUB_ENV}"
-#     echo "OB_STATUS_TEXT=${GITHUB_WORKSPACE}/${OB_STATUS_TEXT}" >> "${GITHUB_ENV}"
-
-#     if [[ ! -d "${OB_ARTIFACTS_DIR}" ]]; then
-#       echo "No \$OB_ARTIFACTS_DIR directory found, creating it"
-#       mkdir -p "${OB_ARTIFACTS_DIR}"
-#     fi
-
-#     if [[ ! -d "${{OB_STATUS_TEXT}} " ]]; then
-#       echo "No \$OB_STATUS_TEXT file found, creating it"
-#       touch "${OB_STATUS_TEXT}"
-#     fi
-#   fi
-# }
-
-# pushArtifactsBranch() {
-#   echo "Backng up artifacts"
-#   cd .ci-tools
-#   git config --local user.name "CI Action"
-#   git config --local user.email "ci@example.com"
-
-#   ${OB_STATUS_TEXT}
-#   if [[ -f "${OB_STATUS_TEXT}" ]] && [[ ! -s "${OB_STATUS_TEXT}" ]] ; then
-#     echo "Removing empty \$OB_STATUS_TEXT file"
-#     rm "${OB_STATUS_TEXT}"
-#   fi
-
-#   git add -A
-#   branch_status=$(git status --porcelain)
-#   if [[ -n "${branch_status}" ]]; then
-#     echo "Committing artifact changes"
-#     git commit -m "Back up the artifacts created by wildfly-core"
-
-#     TMP=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-
-#     echo "Fetching origin ${TMP} branch..."
-#     git fetch origin ${TMP}
-
-#     echo "Rebasing on origin/${TMP}..."
-#     git rebase origin/${TMP}
-
-#     echo "Pushing origin ${TMP}..."
-#     git push origin ${TMP}
-#   else
-#      echo "No changes"
-#   fi
-# }
 
 splitLargeFilesInArtifactsDirectory() {
   if [[ ${IS_CUSTOM_COMPONENT} == "1" ]]; then
@@ -130,7 +90,7 @@ pushToCache() {
   fi
 
   if [[ -n "${what_to_add}" ]]; then
-    cd .ci-tools
+    cd "${CI_TOOLS}"
     git config --global user.email "you@example.com"
     git config --global user.name "Your Name"
 
@@ -165,7 +125,7 @@ pushToCache() {
 #       cd "${GITHUB_WORKSPACE}"
 #       rm "${snapshots}"
 #       # This does some further trimming just for our snapshots, but might not be needed if we just do them all in one go
-#       /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml "${temp_repo}" .ci-tools/repo-backups/${COMPONENT}
+#       /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml "${temp_repo}" ${CI_TOOLS}/repo-backups/${COMPONENT}
 #     else
 #       echo "No file containing snapshots found: ${snapshots}"
 #     fi
@@ -179,8 +139,8 @@ copySnapshotsToCache() {
     echo Contents of .m2-repo-mount
     ls -al .m2-repo-mount
 
-    echo Backing up our snapshots from .m2-repo-mount to .ci-tools/repo-backups/${COMPONENT}
-    /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml .m2-repo-mount .ci-tools/repo-backups/${COMPONENT}
+    echo Backing up our snapshots from .m2-repo-mount to ${CI_TOOLS}/repo-backups/${COMPONENT}
+    /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml .m2-repo-mount ${CI_TOOLS}/repo-backups/${COMPONENT}
   fi
 }
 
@@ -213,3 +173,11 @@ pushToCache
 echo "Action done!"
 # Disable the EXIT trap set by /ci-tool-common.sh
 trap - EXIT
+
+myFunc() {
+  echo hello
+}
+
+echo one
+myFunc
+echo two
