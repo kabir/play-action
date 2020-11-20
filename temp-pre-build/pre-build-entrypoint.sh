@@ -8,9 +8,9 @@ source /ci-tool-common.sh
 ############################################################
 # Input variables and validation
 ############################################################
-IS_BUILD_JOB=${INPUT_BUILD}
-IS_CUSTOM_COMPONENT=${INPUT_CUSTOM}
-IS_WORKFLOW_END_JOB=${INPUT_WORKFLOW_END_JOB}
+IS_BUILD_JOB="${INPUT_BUILD}"
+IS_CUSTOM_COMPONENT="${INPUT_CUSTOM}"
+IS_WORKFLOW_END_JOB="${INPUT_WORKFLOW-END-JOB}"
 
 echo "IS_BUILD_JOB: ${IS_BUILD_JOB}"
 echo "IS_CUSTOM_COMPONENT: ${IS_CUSTOM_COMPONENT}"
@@ -25,7 +25,7 @@ if [[ "${IS_CUSTOM_COMPONENT}" != "0" && "${IS_CUSTOM_COMPONENT}" != "1" ]]; the
   logError "expected 0 or 1 for 'custom' input!"
   exit 1
 fi
-if [[ "${IS_WORKFLOW_END_JOB}" != 1 && "${IS_BUILD_JOB}" == "0" && "${IS_CUSTOM_COMPONENT}" == "0" ]]; then
+if [[ "${IS_WORKFLOW_END_JOB}" != "1" && "${IS_BUILD_JOB}" == "0" && "${IS_CUSTOM_COMPONENT}" == "0" ]]; then
   logError "build=0 and custom=0 is an invalid combination for non workflow end jobs!"
   exit 1
 fi
