@@ -10,7 +10,7 @@ source /ci-tool-common.sh
 ############################################################
 IS_BUILD_JOB="${INPUT_BUILD}"
 IS_CUSTOM_COMPONENT="${INPUT_CUSTOM}"
-IS_WORKFLOW_END_JOB="${INPUT_WORKFLOW-END-JOB}"
+IS_WORKFLOW_END_JOB="${INPUT_END}"
 
 echo "IS_BUILD_JOB: ${IS_BUILD_JOB}"
 echo "IS_CUSTOM_COMPONENT: ${IS_CUSTOM_COMPONENT}"

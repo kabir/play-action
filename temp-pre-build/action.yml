@@ -7,7 +7,7 @@ inputs:
   custom:
     description: Indicates if this is a custom component or not. 1 means we are, 0 means we are not.
     required: true
-  workflow-end-job:
+  end:
     description: Whether this is a workflow end job. 1 means we are, 0 means we are not.
     required: false
     default: 0
