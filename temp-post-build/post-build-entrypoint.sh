@@ -86,7 +86,9 @@ pushToCache() {
     what_to_add="-A"
   elif [[ "${IS_CUSTOM_COMPONENT}" == "1" ]]; then
     # For custom component non-build jobs we only back up the $OB_ARTIFACTS_DIR directory
-    what_to_add="${OB_ARTIFACTS_DIR}"
+    artifacts_absolute="${GITHUB_WORKSPACE}/${OB_ARTIFACTS_DIR}"
+    ci_tools_absolute="$GITHUB_WORKSPACE/${CI_TOOLS}"
+    what_to_add="$(realpath --relative-to=${ci_tools_absolute} ${artifacts_absolute})"
   fi
 
   if [[ -n "${what_to_add}" ]]; then

@@ -139,12 +139,13 @@ overlayDownloadedSnapshots() {
   fi
 }
 
-makeObArtifactsAndStatusAbsolutePaths() {
-  if [[ ${IS_CUSTOM_COMPONENT} == "1" ]]; then
+createObArtifactsAndStatus() {
+  if [[ "${IS_CUSTOM_COMPONENT}" == "1" || "${IS_WORKFLOW_END_JOB}" == "1" ]]; then
     echo "Converting \$OB_ARTIFACTS_DIR and \$OB_STATUS_TEXT to absolute paths"
 
-    echo "OB_ARTIFACTS_DIR=${GITHUB_WORKSPACE}/${OB_ARTIFACTS_DIR}" >> "${GITHUB_ENV}"
-    echo "OB_STATUS_TEXT=${GITHUB_WORKSPACE}/${OB_STATUS_TEXT}" >> "${GITHUB_ENV}"
+    # These paths will not work outside this container so don't do this
+    # echo "OB_ARTIFACTS_DIR=${GITHUB_WORKSPACE}/${OB_ARTIFACTS_DIR}" >> "${GITHUB_ENV}"
+    # echo "OB_STATUS_TEXT=${GITHUB_WORKSPACE}/${OB_STATUS_TEXT}" >> "${GITHUB_ENV}"
 
     if [[ ! -d "${OB_ARTIFACTS_DIR}" ]]; then
       echo "No \$OB_ARTIFACTS_DIR directory found, creating it"
@@ -186,7 +187,7 @@ overlayDownloadedSnapshots
 setProjectVersionOutputVariable
 setSha1OutputVariable
 addIPv6LocalhostToEtcHosts
-makeObArtifactsAndStatusAbsolutePaths
+createObArtifactsAndStatus
 mergeLargeFilesInArtifactsDirectory
 
 echo "Action done!"
