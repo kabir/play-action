@@ -11,20 +11,14 @@ source /ci-tool-common.sh
 COMPONENT="${INPUT_COMPONENT}"
 IS_BUILD_JOB=${INPUT_BUILD}
 IS_CUSTOM_COMPONENT=${INPUT_CUSTOM}
-SNAPSHOTS=${INPUT_SNAPSHOTS}
 
 echo "COMPONENT: ${COMPONENT}"
 echo "IS_BUILD_JOB: ${IS_BUILD_JOB}"
 echo "IS_CUSTOM_COMPONENT: ${IS_CUSTOM_COMPONENT}"
-echo "SNAPSHOTS: ${SNAPSHOTS}"
 
 
 if [[ -z "${COMPONENT}" ]]; then
   logError "'component' input can not be empty!"
-  exit 1
-fi
-if [[ -z "${SNAPSHOTS}" ]]; then
-  logError "'snapshots' input can not be empty!"
   exit 1
 fi
 if [[ "${IS_BUILD_JOB}" != "0" && "${IS_BUILD_JOB}" != "1" ]]; then
@@ -155,35 +149,41 @@ pushToCache() {
   fi
 }
 
+# Keep this old version in case the mounting of ~/.m2/repository to .m2-repo-mount in the runner bends too many rules
+# copySnapshotsToCache() {
+#   if [[ "$IS_BUILD_JOB" == 1 ]]; then
+#     # If we reintroduce this we need to add this input variable in action.yml again and parse $INPUT_SNAPSHOTS
+#     snapshots="${GITHUB_WORKSPACE}/${SNAPSHOTS}"
+
+#     if [[ -f ${snapshots} ]]; then
+#       temp_repo="$(mktemp -d)"
+#       cd "${temp_repo}"
+
+#       echo "Untarring ${snapshots} to ${temp_repo}"
+
+#       tar xfzv "${snapshots}"
+#       cd "${GITHUB_WORKSPACE}"
+#       rm "${snapshots}"
+#       # This does some further trimming just for our snapshots, but might not be needed if we just do them all in one go
+#       /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml "${temp_repo}" .ci-tools/repo-backups/${COMPONENT}
+#     else
+#       echo "No file containing snapshots found: ${snapshots}"
+#     fi
+#   fi
+# }
 copySnapshotsToCache() {
   if [[ "$IS_BUILD_JOB" == 1 ]]; then
+    # This does some further trimming just for our snapshots, but might not be needed if we just do them all in one go
 
     # Temp
-    echo "It is build job"
-    echo "ls -al"
-    ls -al
-    echo "ls -al ${GITHUB_WORKSPACE}"
-    ls -al ${GITHUB_WORKSPACE}
+    echo Contents of .m2-repo-mount
+    ls -al .m2-repo-mount
 
-
-    snapshots="${GITHUB_WORKSPACE}/${SNAPSHOTS}"
-
-    if [[ -f ${snapshots} ]]; then
-      temp_repo="$(mktemp -d)"
-      cd "${temp_repo}"
-
-      echo "Untarring ${snapshots} to ${temp_repo}"
-
-      tar xfzv "${snapshots}"
-      cd "${GITHUB_WORKSPACE}"
-      rm "${snapshots}"
-      # This does some further trimming just for our snapshots, but might not be needed if we just do them all in one go
-      /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml "${temp_repo}" .ci-tools/repo-backups/${COMPONENT}
-    else
-      echo "No file containing snapshots found: ${snapshots}"
-    fi
+    echo Backing up our snapshots from .m2-repo-mount to .ci-tools/repo-backups/${COMPONENT}
+    /multi-repo-ci-tool-runner backup-maven-artifacts ./pom.xml .m2-repo-mount .ci-tools/repo-backups/${COMPONENT}
   fi
 }
+
 
 ############################################################
 # Main code
@@ -198,6 +198,9 @@ env
 echo "========="
 echo "Current directory $(pwd) contents":
 ls -al
+
+echo "OB_CI_ARTIFACTS_DIR:  ${OB_ARTIFACTS_DIR}"
+echo "OB_STATUS_TEXT:  ${OB_STATUS_TEXT}"
 
 
 checkCheckedOutRepo

@@ -10,9 +10,6 @@ inputs:
   custom:
     description: Indicates if this is a custom component or not. 1 means we are, 0 means we are not.
     required: true
-  snapshots:
-    description: A tar.gz containing the SNAPSHOTS from the job
-    required: true
 
 runs:
   using: 'docker'

@@ -94,31 +94,41 @@ refreshStorageCache() {
   cd "${GITHUB_WORKSPACE}"
 }
 
-tarDownloadedSnapshots() {
+# Keep this in case the mounting of ~/.m2/repository to .m2-repo-mount in the runner bends too many rules
+# tarDownloadedSnapshots() {
+#   # We don't have access to the runner's .m2/ directory from here, so work around that
+#   # by using a temporary directory that we will move into the $GITHUB_WORKSPACE
+#   if [[ -d ".ci-tools/repo-backups" && -n "$(ls -A .ci-tools/repo-backups)" ]]; then
+#     tmp="$(mktemp -d)"
+
+#     echo "Overlaying snapshots from previous jobs"
+#     /multi-repo-ci-tool-runner overlay-backed-up-maven-artifacts ${tmp} .ci-tools/repo-backups
+
+#     # Create the tar
+#     cd "${tmp}"
+
+#     # TMP
+#     echo "In tmp folder ${tmp}. Directory contents:"
+#     ls -al
+#     echo "Trying to tar"
+
+#     tar cvfz "${GITHUB_WORKSPACE}/.snapshots.tgz" .
+#     echo "Tarred"
+#     cd "${GITHUB_WORKSPACE}"
+#     echo "Back in workspace"
+#     rm -rf "${tmp}"
+#     echo "Removed tmp dir"
+#     # If we reintroduce this we need to add snapshots-tar as an output variable to action.yml again
+#     echo "::set-output name=snapshots-tar::.snapshots.tgz"
+#     echo "Output variable set"
+#   fi
+# }
+overlayDownloadedSnapshots() {
   # We don't have access to the runner's .m2/ directory from here, so work around that
   # by using a temporary directory that we will move into the $GITHUB_WORKSPACE
   if [[ -d ".ci-tools/repo-backups" && -n "$(ls -A .ci-tools/repo-backups)" ]]; then
-    tmp="$(mktemp -d)"
-
-    echo "Overlaying snapshots from previous jobs"
-    /multi-repo-ci-tool-runner overlay-backed-up-maven-artifacts ${tmp} .ci-tools/repo-backups
-
-    # Create the tar
-    cd "${tmp}"
-
-    # TMP
-    echo "In tmp folder ${tmp}. Directory contents:"
-    ls -al
-    echo "Trying to tar"
-
-    tar cvfz "${GITHUB_WORKSPACE}/.snapshots.tgz" .
-    echo "Tarred"
-    cd "${GITHUB_WORKSPACE}"
-    echo "Back in workspace"
-    rm -rf "${tmp}"
-    echo "Removed tmp dir"
-    echo "::set-output name=snapshots-tar::.snapshots.tgz"
-    echo "Output variable set"
+    echo "Overlaying snapshots from previous jobs to .ci-tools/repo-backups"
+    /multi-repo-ci-tool-runner overlay-backed-up-maven-artifacts .m2-repo-mount .ci-tools/repo-backups
   fi
 }
 
@@ -164,7 +174,8 @@ echo "========="
 checkCheckedOutRepo
 
 refreshStorageCache
-tarDownloadedSnapshots
+#tarDownloadedSnapshots - replaced by overlayDownloadedSnapshots
+overlayDownloadedSnapshots
 setProjectVersionOutputVariable
 setSha1OutputVariable
 addIPv6LocalhostToEtcHosts

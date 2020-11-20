@@ -124,6 +124,9 @@ fi
 if ! grep -q .ci-tools .gitignore; then
   # Add .ci-tools to .gitignore
   echo .ci-tools >> .gitignore
+  # Add .m2-repo-mount to .gitignore (this will be used to mount the runner ~/.m2/repo
+  #for use in our actions )
+  echo .m2-repo-mount >> .gitignore
 fi
 
 ############################################################
