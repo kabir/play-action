@@ -1,0 +1,5 @@
+name: Overbård Multi Repo CI - Pre Build Action
+description: Used in the generated workflow to do the steps before doing the build. Internal use only.
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
